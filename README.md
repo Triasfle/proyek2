@@ -98,19 +98,19 @@ Aplikasi terdiri dari tiga komponen utama:
     DPOD=$(kubectl get pod -n database-ns -l app=database -o jsonpath='{.items[0].metadata.name}')
     ```
 
-2.  **[IZIN] Uji Akses dari Frontend ke Backend:**
+2.  **[IZIN] Uji Akses dari Frontend ke Backend:** (masih tensting)
     ```bash
     kubectl exec -n frontend-ns $FPOD -- curl -s http://backend.backend-ns.svc.cluster.local:8080 | head -3
     ```
     Output <!DOCTYPE html>
 
-3.  **[IZIN] Uji Akses dari Backend ke Database:**
+3.  **[IZIN] Uji Akses dari Backend ke Database:** (masih tensting)
     ```bash
     kubectl exec -n backend-ns $BPOD -- curl -v -m 5 http://database.database-ns.svc.cluster.local:5432
     ```
     Output `Connected to database...` dan `Empty reply from server` (karena bukan HTTP).
 
-4.  **[DIBLOKIR] Uji Akses dari Frontend ke Database:**
+4.  **[DIBLOKIR] Uji Akses dari Frontend ke Database:** (masih tensting)
     ```bash
     kubectl exec -n frontend-ns $FPOD -- timeout 10 curl -v http://database.database-ns.svc.cluster.local:5432
     ```
@@ -121,16 +121,21 @@ Jika semua pengujian berjalan sesuai harapan, maka `NetworkPolicy` telah berhasi
 ## Test Persistensi Data (VPC)
 
 1.  **Buat Database Dummy:**
+    Copy
     ```bash
-    kubectl exec -n database-ns $DPOD -- psql -U (Username Anda) -c "CREATE DATABASE persist;"
+    DPOD=$(kubectl get pod -n database-ns -l app=database -o jsonpath='{.items[0].metadata.name}')
+    ```
+    Create Create Database
+    ```bash
+    kubectl exec -n database-ns $DPOD -- psql -U alie -d pastebin_db -c "CREATE DATABASE test_persist;"
     ```
     
-2.  **Hapus Pod Database:**
+3.  **Hapus Pod Database:**
     ```bash
     kubectl delete pod -n database-ns $DPOD
     ```
     
-3.  **Tunggu Pod Baru Siap:**
+4.  **Tunggu Pod Baru Siap:**
     ```bash
     kubectl get pods -A # Tunggu hingga Running
     ```
@@ -139,13 +144,8 @@ Jika semua pengujian berjalan sesuai harapan, maka `NetworkPolicy` telah berhasi
     DPOD_NEW=$(kubectl get pod -n database-ns -l app=database -o jsonpath='{.items[0].metadata.name}')
     ```
 
-4.  **Verifikasi Database:**
+5.  **Verifikasi Database:**
     ```bash
-    kubectl exec -n database-ns $DPOD_NEW -- psql -U PTCPM -c "\l" | grep persist
+    kubectl exec -n database-ns $DPOD_NEW -- psql -U alie -d postgres -c "\l" | grep test_persist
     ```
     Jika database `TEST_PERSIST` **MASIH ADA**, maka **PVC berfungsi dengan baik**.
-
-5.  **Tampilkan Credential Database: (Apabila Diperlukan)**
-    ```bash
-    kubectl exec -n database-ns $DPOD_NEW -- env | grep -E "(POSTGRES_USER|POSTGRES_PASSWORD)"
-    ```
