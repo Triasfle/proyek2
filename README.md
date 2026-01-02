@@ -7,7 +7,7 @@ Proyek ini mendemonstrasikan deployment aplikasi multi-tier (frontend → backen
 Aplikasi terdiri dari tiga komponen utama:
 
 - **Frontend:** [Repository](https://github.com/aLieexe/pastebin-frontend) - [Dockerhub](https://hub.docker.com/r/alie12/pastebin-frontend)`alie12/pastebin-frontend:kubernetes` 
-- **Backend:** [Repository](https://github.com/aLieexe/pastebin-backend) - [Dockerhub](hub.docker.com/r/alie12/pastebin-backend)`alie12/pastebin-backend:kubernetes`
+- **Backend:** [Repository](https://github.com/aLieexe/pastebin-backend) - [Dockerhub](https://hub.docker.com/r/alie12/pastebin-backend)`alie12/pastebin-backend:kubernetes`
 - **Database:** Server PostgreSQL (`postgres:17`)
 
 ## Fitur Utama
@@ -49,7 +49,7 @@ Aplikasi terdiri dari tiga komponen utama:
 1.  **Konfigurasi Variabel:**
     Check file `terraform.tfvars` ganti variable seperti password, user menjadi ke yang diinginkan:
       
-2.  **Aktifkan Minikube Tunnel (Apabila menggunakan WSL)**
+2.  **Aktifkan Minikube Tunnel**
     ```bash
     minikube tunnel
     ```
@@ -98,23 +98,23 @@ Aplikasi terdiri dari tiga komponen utama:
     DPOD=$(kubectl get pod -n database-ns -l app=database -o jsonpath='{.items[0].metadata.name}')
     ```
 
-2.  **[IZIN] Uji Akses dari Frontend ke Backend:** (masih tensting)
+2.  **[IZIN] Uji Akses dari Frontend ke Backend:**
     ```bash
-    kubectl exec -n frontend-ns $FPOD -- curl -s http://backend.backend-ns.svc.cluster.local:8080 | head -3
+    kubectl exec -n frontend-ns $FPOD -- curl -s http://backend.backend-ns.svc.cluster.local:8080/healthcheck | head -3
     ```
-    Output <!DOCTYPE html>
+    Output Status Frontend
 
-3.  **[IZIN] Uji Akses dari Backend ke Database:** (masih tensting)
+3.  **[IZIN] Uji Akses dari Backend ke Database:**
     ```bash
     kubectl exec -n backend-ns $BPOD -- curl -v -m 5 http://database.database-ns.svc.cluster.local:5432
     ```
     Output `Connected to database...` dan `Empty reply from server` (karena bukan HTTP).
 
-4.  **[DIBLOKIR] Uji Akses dari Frontend ke Database:** (masih tensting)
+4.  **[DIBLOKIR] Uji Akses dari Frontend ke Database:**
     ```bash
     kubectl exec -n frontend-ns $FPOD -- timeout 10 curl -v http://database.database-ns.svc.cluster.local:5432
     ```
-    Output `command terminated with exit code 124` (Timeout)
+    Output `Tidak Terkoneksi ke Database & Request Completely Sent Off`
 
 Jika semua pengujian berjalan sesuai harapan, maka `NetworkPolicy` telah berhasil diterapkan.
 
