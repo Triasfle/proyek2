@@ -14,7 +14,7 @@ Aplikasi terdiri dari tiga komponen utama:
 
 - **Infrastructure as Code (IaC):** Menggunakan Terraform untuk mendefinisikan dan mengelola infrastruktur Kubernetes.
 - **Network Policy (Zero-Trust):**
-  - `frontend` hanya boleh diakses dari `public` (melalui NodePort).
+  - `frontend` hanya boleh diakses dari `public`
   - `backend` hanya boleh diakses oleh pod `frontend`.
   - `database` hanya boleh diakses oleh pod `backend`.
 - **Konfigurasi Variabel:** Port, image container, dan credential database disimpan dalam variabel Terraform.
@@ -47,7 +47,7 @@ Aplikasi terdiri dari tiga komponen utama:
 ## Deployment
 
 1.  **Konfigurasi Variabel:**
-    Check file `terraform.tfvars` ganti variable seperti password, user menjadi ke yang diinginkan:
+    Check file `terraform.tfvars` ganti variable seperti password dan user menjadi yang diinginkan:
       
 2.  **Aktifkan Minikube Tunnel**
     ```bash
